@@ -1,0 +1,169 @@
+{
+  "info": {
+    "name": "Beer CRUD",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:5141/api/Beer"
+    },
+    {
+      "key": "brandId",
+      "value": "1"
+    },
+    {
+      "key": "beerId",
+      "value": ""
+    }
+  ],
+  "item": [
+    {
+      "name": "Create beer",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Postman Test Beer\",\n  \"brandId\": {{brandId}},\n  \"alcohol\": 5.0\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": "{{baseUrl}}"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('returns 201 Created', function () { pm.response.to.have.status(201); });",
+              "const beer = pm.response.json();",
+              "pm.test('returns the created beer', function () { pm.expect(beer).to.have.property('id'); pm.expect(beer.name).to.eql('Postman Test Beer'); });",
+              "pm.collectionVariables.set('beerId', beer.id);"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Read all beers",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{baseUrl}}"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('returns 200 OK', function () { pm.response.to.have.status(200); });",
+              "pm.test('returns a JSON array', function () { pm.expect(pm.response.json()).to.be.an('array'); });"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Read created beer",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{baseUrl}}/{{beerId}}"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('returns 200 OK', function () { pm.response.to.have.status(200); });",
+              "pm.test('returns the requested beer', function () { pm.expect(pm.response.json().id).to.eql(Number(pm.collectionVariables.get('beerId'))); });"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Update created beer",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Postman Test Beer Updated\",\n  \"brandId\": {{brandId}},\n  \"alcohol\": 6.0\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": "{{baseUrl}}/{{beerId}}"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('returns 204 No Content', function () { pm.response.to.have.status(204); });"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Delete created beer",
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": "{{baseUrl}}/{{beerId}}"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('returns 204 No Content', function () { pm.response.to.have.status(204); });"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Confirm deleted beer is missing",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{baseUrl}}/{{beerId}}"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('returns 404 Not Found', function () { pm.response.to.have.status(404); });"
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}
